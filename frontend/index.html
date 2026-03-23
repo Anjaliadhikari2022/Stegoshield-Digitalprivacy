@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Steganography - Hide Messages</title>
     <style>
-        /* Main App Styles - Extraordinary Design */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #000000;
@@ -659,13 +658,11 @@
 
         <footer>
             <p>Secure communication through steganography</p>
-            <p>© 2026 StegoShield</p>
+            <p> 2026 StegoShield</p>
         </footer>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script>
-        // Load user information
         window.addEventListener('load', function() {
             const userEmail = sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail');
             const userName = localStorage.getItem('userName');
@@ -674,11 +671,9 @@
                 document.getElementById('user-email').textContent = userEmail;
                 document.getElementById('user-name').textContent = userName || 'User';
                 
-                // Create avatar with first letter of name
                 const firstLetter = (userName || 'U').charAt(0).toUpperCase();
                 document.getElementById('user-avatar').textContent = firstLetter;
             } else {
-                // Redirect to login if no user session
                 window.location.href = 'login.html';
             }
         });
@@ -687,11 +682,10 @@
             sessionStorage.removeItem('userEmail');
             localStorage.removeItem('userEmail');
             localStorage.removeItem('userName');
-            return true; // Allow navigation to welcome page
+            return true;
         }
 
         function showTab(tabName) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -699,14 +693,13 @@
                 btn.classList.remove('active');
             });
             
-            // Show selected tab
             document.getElementById(tabName + '-tab').classList.add('active');
             event.target.classList.add('active');
         }
 
         function previewImage(input, previewId) {
-            const preview = document.getElementById(previewId);
             const file = input.files[0];
+            const preview = document.getElementById(previewId);
             
             if (file) {
                 const reader = new FileReader();
@@ -717,7 +710,6 @@
             }
         }
 
-        // Image preview handlers
         document.getElementById('embed-image').addEventListener('change', function() {
             previewImage(this, 'embed-preview');
         });
@@ -726,20 +718,30 @@
             previewImage(this, 'extract-preview');
         });
 
-        // Form submissions
         document.getElementById('embed-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData();
-            formData.append('image', document.getElementById('embed-image').files[0]);
-            formData.append('message', document.getElementById('embed-message').value);
-            formData.append('key', document.getElementById('embed-key').value);
+            const imageFile = document.getElementById('embed-image').files[0];
+            const message = document.getElementById('embed-message').value;
+            const encryptionKey = document.getElementById('embed-key').value;
+            
+            if (!imageFile || !message.trim()) {
+                alert('Please select an image and enter a message');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            formData.append('message', message);
+            if (encryptionKey) {
+                formData.append('encryption_key', encryptionKey);
+            }
             
             const resultDiv = document.getElementById('embed-result');
             resultDiv.style.display = 'block';
             resultDiv.className = 'result';
             resultDiv.innerHTML = '<div class="loading"></div> Processing...';
-            
+
             fetch('http://localhost:8000/api/embed', {
                 method: 'POST',
                 body: formData
@@ -749,30 +751,21 @@
                 if (data.success) {
                     resultDiv.className = 'result success';
                     resultDiv.innerHTML = `
-                        <h3>✅ Message Hidden Successfully!</h3>
+                        <h3>Success!</h3>
+                        <p>${data.message}</p>
                         <div class="message-box">
                             <p>Your message has been hidden in the image.</p>
-                            <a href="${data.download_url}" class="download-btn">Download Stego Image</a>
                         </div>
+                        <button class="download-btn" onclick="downloadImage('${data.image_url}')">Download Stego Image</button>
                     `;
                 } else {
                     resultDiv.className = 'result error';
-                    resultDiv.innerHTML = `
-                        <h3>❌ Error</h3>
-                        <div class="message-box">
-                            <p>${data.error}</p>
-                        </div>
-                    `;
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error}</p>`;
                 }
             })
             .catch(error => {
                 resultDiv.className = 'result error';
-                resultDiv.innerHTML = `
-                    <h3>❌ Connection Error</h3>
-                    <div class="message-box">
-                        <p>Could not connect to the server. Please make sure the backend is running.</p>
-                    </div>
-                `;
+                resultDiv.innerHTML = '<h3>Error</h3><p>Failed to process image. Please try again.</p>';
             });
         });
 
@@ -780,14 +773,24 @@
             e.preventDefault();
             
             const formData = new FormData();
-            formData.append('image', document.getElementById('extract-image').files[0]);
-            formData.append('key', document.getElementById('extract-key').value);
+            const imageFile = document.getElementById('extract-image').files[0];
+            const encryptionKey = document.getElementById('extract-key').value;
+            
+            if (!imageFile) {
+                alert('Please select an image');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            if (encryptionKey) {
+                formData.append('encryption_key', encryptionKey);
+            }
             
             const resultDiv = document.getElementById('extract-result');
             resultDiv.style.display = 'block';
             resultDiv.className = 'result';
             resultDiv.innerHTML = '<div class="loading"></div> Extracting...';
-            
+
             fetch('http://localhost:8000/api/extract', {
                 method: 'POST',
                 body: formData
@@ -797,37 +800,36 @@
                 if (data.success) {
                     resultDiv.className = 'result success';
                     resultDiv.innerHTML = `
-                        <h3>✅ Message Extracted Successfully!</h3>
+                        <h3>Message Extracted!</h3>
                         <div class="message-box">
                             <p><strong>Hidden Message:</strong></p>
                             <p>${data.message}</p>
-                            <button class="copy-btn" onclick="copyToClipboard('${data.message}')">Copy Message</button>
                         </div>
+                        <button class="copy-btn" onclick="copyMessage('${data.message}')">Copy Message</button>
                     `;
                 } else {
                     resultDiv.className = 'result error';
-                    resultDiv.innerHTML = `
-                        <h3>❌ Error</h3>
-                        <div class="message-box">
-                            <p>${data.error}</p>
-                        </div>
-                    `;
+                    resultDiv.innerHTML = `<h3>Error</h3><p>${data.error}</p>`;
                 }
             })
             .catch(error => {
                 resultDiv.className = 'result error';
-                resultDiv.innerHTML = `
-                    <h3>❌ Connection Error</h3>
-                    <div class="message-box">
-                        <p>Could not connect to the server. Please make sure the backend is running.</p>
-                    </div>
-                `;
+                resultDiv.innerHTML = '<h3>Error</h3><p>Failed to extract message. Please try again.</p>';
             });
         });
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
+        function downloadImage(imageUrl) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = 'stego_image.png';
+            link.click();
+        }
+
+        function copyMessage(message) {
+            navigator.clipboard.writeText(message).then(function() {
                 alert('Message copied to clipboard!');
+            }).catch(function(err) {
+                alert('Failed to copy message');
             });
         }
     </script>

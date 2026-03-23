@@ -73,7 +73,7 @@
             <div class="tag">🔐 Security First</div>
             <p>Hide. Protect. Communicate Securely.</p>
             <div class="divider"></div>
-            <p>© 2026 StegoShield</p>
+            <p>2026 StegoShield</p>
         </div>
     </footer>
 
@@ -133,7 +133,6 @@
             document.getElementById('confirm-password-error').textContent = '';
         }
 
-        // Password strength checker
         document.getElementById('password').addEventListener('input', function() {
             checkPasswordStrength(this.value);
         });
@@ -151,7 +150,6 @@
             const btnText = signupBtn.querySelector('.btn-text');
             const btnLoading = signupBtn.querySelector('.btn-loading');
             
-            // Validation
             let isValid = true;
             
             if (!fullname) {
@@ -196,22 +194,17 @@
             
             if (!isValid) return;
             
-            // Show loading state
             btnText.style.display = 'none';
             btnLoading.style.display = 'inline';
             signupBtn.disabled = true;
             
-            // Simulate account creation
             setTimeout(() => {
-                // For demo: accept gmail.com emails with any password
                 if (email.endsWith('@gmail.com') || email.endsWith('@stegoshield.com')) {
                     console.log('Account created successfully:', { fullname, email });
                     
-                    // Store user data (in real app, this would be server-side)
                     localStorage.setItem('userName', fullname);
                     localStorage.setItem('userEmail', email);
                     
-                    // Redirect to login page
                     window.location.href = 'login.html';
                 } else {
                     showError('email', 'Please use a valid email address (@gmail.com or @stegoshield.com for demo)');

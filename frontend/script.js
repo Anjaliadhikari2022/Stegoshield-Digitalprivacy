@@ -1,23 +1,17 @@
-// Tab switching
 function showTab(tabName) {
-    // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // Remove active class from all buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Show selected tab
     document.getElementById(tabName + '-tab').classList.add('active');
     
-    // Add active class to clicked button
     event.target.classList.add('active');
 }
 
-// Image preview functionality
 document.getElementById('embed-image').addEventListener('change', function(e) {
     handleImagePreview(e, 'embed-preview');
 });
@@ -41,7 +35,6 @@ function handleImagePreview(event, previewId) {
     }
 }
 
-// Embed message form submission
 document.getElementById('embed-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -92,7 +85,6 @@ document.getElementById('embed-form').addEventListener('submit', async function(
     }
 });
 
-// Extract message form submission
 document.getElementById('extract-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -145,18 +137,15 @@ document.getElementById('extract-form').addEventListener('submit', async functio
     }
 });
 
-// Show result message
 function showResult(elementId, message, type) {
     const resultDiv = document.getElementById(elementId);
     resultDiv.innerHTML = message;
     resultDiv.className = `result ${type}`;
     resultDiv.style.display = 'block';
     
-    // Scroll to result
     resultDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Copy to clipboard functionality
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
         alert('Message copied to clipboard!');
@@ -166,7 +155,6 @@ function copyToClipboard(text) {
     });
 }
 
-// Clear results when switching tabs
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.result').forEach(result => {
