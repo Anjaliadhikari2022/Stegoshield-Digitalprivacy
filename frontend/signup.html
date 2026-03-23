@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - StegoShield</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Sign Up</h1>
+            <p class="tagline">Create your secure account</p>
+            
+            <form class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" placeholder="Enter your full name" required>
+                    <span class="error-message" id="fullname-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <span class="error-message" id="email-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a strong password" required>
+                    <span class="error-message" id="password-error"></span>
+                    <div class="password-strength" id="password-strength">
+                        <div class="strength-bar"></div>
+                        <span class="strength-text">Password strength</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="Confirm your password" required>
+                    <span class="error-message" id="confirm-password-error"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" required>
+                        <span class="checkmark"></span>
+                        I agree to the <a href="#" class="link">Terms of Service</a> and <a href="#" class="link">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn" id="signup-btn">
+                    <span class="btn-text">Sign Up</span>
+                    <span class="btn-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Creating account...
+                    </span>
+                </button>
+            </form>
+            
+            <div class="auth-links">
+                <p>Already have an account? <a href="login.html" class="link">Login</a></p>
+            </div>
+            
+            <div class="back-link">
+                <a href="welcome.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="tag">🔐 Security First</div>
+            <p>Hide. Protect. Communicate Securely.</p>
+            <div class="divider"></div>
+            <p>© 2026 StegoShield</p>
+        </div>
+    </footer>
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const eyeIcon = document.getElementById(fieldId + '-eye');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function validateName(name) {
+            return name.trim().length >= 2 && /^[a-zA-Z\s]+$/.test(name.trim());
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthBar = document.querySelector('.strength-bar');
+            const strengthText = document.querySelector('.strength-text');
+            
+            if (password.length >= 6) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            const strengthLevels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            const strengthColors = ['#dc2626', '#f59e0b', '#eab308', '#84cc16', '#22c55e'];
+            
+            strengthBar.style.width = (strength * 25) + '%';
+            strengthBar.style.backgroundColor = strengthColors[strength];
+            strengthText.textContent = 'Password strength: ' + strengthLevels[strength];
+            
+            return strength;
+        }
+
+        function showError(fieldId, message) {
+            document.getElementById(fieldId + '-error').textContent = message;
+        }
+
+        function clearErrors() {
+            document.getElementById('fullname-error').textContent = '';
+            document.getElementById('email-error').textContent = '';
+            document.getElementById('password-error').textContent = '';
+            document.getElementById('confirm-password-error').textContent = '';
+        }
+
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            clearErrors();
+            
+            const fullname = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+            const signupBtn = document.getElementById('signup-btn');
+            const btnText = signupBtn.querySelector('.btn-text');
+            const btnLoading = signupBtn.querySelector('.btn-loading');
+            
+            // Validation
+            let isValid = true;
+            
+            if (!fullname) {
+                showError('fullname', 'Full name is required');
+                isValid = false;
+            } else if (!validateName(fullname)) {
+                showError('fullname', 'Please enter a valid name (letters only, min 2 characters)');
+                isValid = false;
+            }
+            
+            if (!email) {
+                showError('email', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('email', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            if (!password) {
+                showError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            } else if (checkPasswordStrength(password) < 2) {
+                showError('password', 'Password is too weak. Please include uppercase, lowercase, numbers, or special characters');
+                isValid = false;
+            }
+            
+            if (!confirmPassword) {
+                showError('confirm-password', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('confirm-password', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (!terms) {
+                alert('Please agree to the Terms of Service and Privacy Policy');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Show loading state
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+            signupBtn.disabled = true;
+            
+            // Simulate account creation
+            setTimeout(() => {
+                // For demo: accept gmail.com emails with any password
+                if (email.endsWith('@gmail.com') || email.endsWith('@stegoshield.com')) {
+                    console.log('Account created successfully:', { fullname, email });
+                    
+                    // Store user data (in real app, this would be server-side)
+                    localStorage.setItem('userName', fullname);
+                    localStorage.setItem('userEmail', email);
+                    
+                    // Redirect to login page
+                    window.location.href = 'login.html';
+                } else {
+                    showError('email', 'Please use a valid email address (@gmail.com or @stegoshield.com for demo)');
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                    signupBtn.disabled = false;
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
